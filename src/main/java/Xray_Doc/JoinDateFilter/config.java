@@ -1,33 +1,31 @@
 package Xray_Doc.JoinDateFilter;
 
 import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.common.config.Config.Comment;
 import net.minecraftforge.common.config.Config.Name;
 import net.minecraftforge.common.config.Config.RangeInt;
 import net.minecraftforge.common.config.Config.Type;
+import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-@Config(modid=Main.MOD_ID, name="JDF_Config", type=Type.INSTANCE)
+@Config(modid = Main.MOD_ID, name = "JDF_Config", type = Type.INSTANCE)
 public class config {
 	@Name("Mod Enable")
-	public static boolean mod_enabled=true;
-	
+	public static boolean mod_enabled = true;
+
 	@Name("Cut-Off Year")
-	@RangeInt(min=2016,max=2100)
-	public static int cutoff_year=2016;
-	
+	@RangeInt(min = 2016, max = 2100)
+	public static int cutoff_year = 2016;
+
 	@Name("Cut-Off Month")
-	@RangeInt(min=1,max=12)
-	public static int cutoff_month=1;
-	
+	@RangeInt(min = 1, max = 12)
+	public static int cutoff_month = 1;
+
 	@Name("Cut-Off Day")
-	@RangeInt(min=1,max=31)
-	public static int cutoff_day=1;
-	
+	@RangeInt(min = 1, max = 31)
+	public static int cutoff_day = 1;
+
 	@Mod.EventBusSubscriber(modid = Main.MOD_ID)
 	private static class EventHandler {
 		@SubscribeEvent
