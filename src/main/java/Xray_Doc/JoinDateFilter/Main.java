@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -38,10 +39,12 @@ public class Main {
 	}
 
 	@SubscribeEvent
-	public void clientH(ClientConnectedToServerEvent event) throws IOException, InterruptedException {
+	public void clientHostJoin(ClientConnectedToServerEvent event) {
 		server = 0;
-		String ip = Minecraft.getMinecraft().getCurrentServerData().serverIP;
-		if (ip.equalsIgnoreCase("constantiam.net")) {
+		//it works on client side although advertised as server only
+		InetSocketAddress remoteHost = (InetSocketAddress) event.getManager().getRemoteAddress();
+		String host = remoteHost.getHostString();
+		if (host.equalsIgnoreCase("constantiam.net")) {
 			server = 1;
 		}
 	}
