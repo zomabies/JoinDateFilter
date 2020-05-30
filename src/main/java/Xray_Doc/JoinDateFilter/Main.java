@@ -9,6 +9,8 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -22,20 +24,20 @@ public class Main {
 	public static final String MOD_ID = "joindatefilter";
 	public static final String NAME = "Join Date Filter";
 	public static final String VERSION = "1.0.4";
+
+	static Logger logger = LogManager.getLogger();
+
 	String name = null;
 	String date = null;
 	int playercheck = 1;
-	writeJoinDate newDate = new writeJoinDate();
-	getJoinDate searchDate = new getJoinDate();
 	int filter = 0;
 	int server = 0;
 
 	@EventHandler
-	public void init(FMLInitializationEvent event) throws IOException {
+	public void init(FMLInitializationEvent event) {
 		FMLCommonHandler.instance().bus().register(this);
 		MinecraftForge.EVENT_BUS.register(this);
-		createFile initFile = new createFile();
-		initFile.createDataFiles();
+		JoinDateData.initializeFile();
 	}
 
 	@SubscribeEvent
@@ -50,7 +52,7 @@ public class Main {
 	}
 
 	@SubscribeEvent
-	public void clientChat(ClientChatReceivedEvent event) throws IOException, InterruptedException {
+	public void clientChat(ClientChatReceivedEvent event) throws IOException {
 
 		if (config.mod_enabled && server == 1) {
 
@@ -68,7 +70,7 @@ public class Main {
 				int endIndex = message.indexOf(">");
 				name = message.substring(startIndex + 1, endIndex);
 
-				filter = searchDate.findJoinDate(name);
+				filter = JoinDateData.findJoinDate(name);
 
 				if (filter == 1) {
 					playercheck = 1;
@@ -83,7 +85,7 @@ public class Main {
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 				String strCurrentDate = currentDate.format(formatter);
 
-				newDate.newDateAppend(name, strCurrentDate);
+				JoinDateData.newDateAppend(name, strCurrentDate);
 				playercheck = 1;
 				event.setMessage(null);
 			} else if (message.contains("Player: ") && playercheck == 0) {
@@ -94,7 +96,7 @@ public class Main {
 				int index = message.indexOf(":");
 				date = message.substring(index + 2, index + 12);
 				event.setMessage(null);
-				newDate.newDateAppend(name, date);
+				JoinDateData.newDateAppend(name, date);
 			} else if (message.contains("Last Seen: ") && playercheck == 0) {
 				playercheck = 1;
 				event.setMessage(null);
