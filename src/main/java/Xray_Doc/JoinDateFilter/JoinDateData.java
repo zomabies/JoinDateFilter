@@ -13,7 +13,7 @@ import java.nio.file.Path;
 
 public class JoinDateData {
 
-	public static final Path MC_DIR = Minecraft.getMinecraft().mcDataDir.toPath();
+	public static final Path MC_DIR = Minecraft.getMinecraft().gameDir.toPath();
 	public static final Path JDF_ROOT = MC_DIR.resolve("JoinDateFilter");
 	public static final Path DATES_TXT = JDF_ROOT.resolve("dates.txt");
 	public static final Path WHITELIST = JDF_ROOT.resolve("whitelist.txt");
