@@ -34,7 +34,7 @@ public class JoinDateData {
 			Files.createFile(DATES_TXT);
 			Files.createFile(WHITELIST);
 		} catch (IOException e) {
-			Main.logger.error("Error creating join date filter files", e);
+			Main.log.error("Error creating join date filter files", e);
 		}
 	}
 

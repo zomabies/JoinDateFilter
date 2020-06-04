@@ -3,13 +3,11 @@ package Xray_Doc.JoinDateFilter;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
@@ -25,7 +23,7 @@ public class Main {
 	public static final String NAME = "Join Date Filter";
 	public static final String VERSION = "@VERSION@";
 
-	static Logger logger = LogManager.getLogger();
+	static Logger log;
 
 	String name = null;
 	String date = null;
@@ -34,8 +32,8 @@ public class Main {
 	int server = 0;
 
 	@EventHandler
-	public void init(FMLInitializationEvent event) {
-		FMLCommonHandler.instance().bus().register(this);
+	public void init(FMLPreInitializationEvent event) {
+		log = event.getModLog();
 		MinecraftForge.EVENT_BUS.register(this);
 		JoinDateData.initializeFile();
 	}
