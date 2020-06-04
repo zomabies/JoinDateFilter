@@ -31,6 +31,15 @@ public class config {
 
 	public static class Experimental {
 
+		@Name("Audit Mode")
+		@Config.Comment("Disables filter only, while collecting joindates.")
+		public boolean auditMode = false;
+
+		@Name("Debug Mode")
+		@Config.Comment("Show added player in chat. Will CAUSE lots of output.\n" +
+				"Only works on new filter function.")
+		public boolean debugMode = false;
+
 		@Name("New Filter Function")
 		@Config.Comment("This REPLACES the original filter function. " +
 				"Will not responsible for any effects caused by it.")

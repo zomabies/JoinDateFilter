@@ -3,6 +3,9 @@ package Xray_Doc.JoinDateFilter;
 import io.netty.channel.local.LocalAddress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.ChatType;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -80,7 +83,7 @@ public class Main {
 				if (filter == 1) {
 					playercheck = 1;
 					filter = 0;
-					event.setMessage(null);
+					if (!config.experimental.auditMode) event.setMessage(null);
 				}
 				if (filter == 2) {
 					playercheck = 1;
@@ -133,7 +136,7 @@ public class Main {
 			if (filter == 1) {
 				playercheck = 1;
 				filter = 0;
-				event.setCanceled(true); // blacklisted
+				if (!config.experimental.auditMode) event.setCanceled(true); // blacklisted
 			}
 			if (filter == 2) {
 				playercheck = 1; // whitelisted
@@ -160,6 +163,10 @@ public class Main {
 				int index = message.indexOf(":");
 				date = message.substring(index + 2, index + 12);
 				JoinDateData.newDateAppend(name, date);
+				if (config.experimental.debugMode) {
+					event.setMessage(debugAddPlayer(name, date));
+					return true;
+				}
 				event.setCanceled(true);
 			} else if (message.startsWith("Last Seen: ") && playercheck == 0) {
 				playercheck = 1;
@@ -167,5 +174,9 @@ public class Main {
 			}
 		}
 		return true;
+	}
+
+	private ITextComponent debugAddPlayer(String name, String date) {
+		return new TextComponentString(TextFormatting.GOLD + "[JDF] Added player: " + name + " - " + date + TextFormatting.RESET);
 	}
 }
