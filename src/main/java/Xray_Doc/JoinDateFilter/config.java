@@ -26,6 +26,17 @@ public class config {
 	@RangeInt(min = 1, max = 31)
 	public static int cutoff_day = 1;
 
+	@Config.Comment("Untested and breaking!")
+	public static Experimental experimental = new Experimental();
+
+	public static class Experimental {
+
+		@Name("New Filter Function")
+		@Config.Comment("This REPLACES the original filter function. " +
+				"Will not responsible for any effects caused by it.")
+		public boolean newFilter = false;
+	}
+
 	@Mod.EventBusSubscriber(modid = Main.MOD_ID)
 	private static class EventHandler {
 		@SubscribeEvent

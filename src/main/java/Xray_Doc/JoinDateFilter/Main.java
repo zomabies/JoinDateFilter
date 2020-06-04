@@ -2,6 +2,7 @@ package Xray_Doc.JoinDateFilter;
 
 import io.netty.channel.local.LocalAddress;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.text.ChatType;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -17,8 +18,7 @@ import java.net.SocketAddress;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@Mod(modid = Main.MOD_ID, name = Main.NAME, version = Main.VERSION)
-
+@Mod(modid = Main.MOD_ID, name = Main.NAME, version = Main.VERSION, guiFactory = "Xray_Doc.JoinDateFilter.gui.GuiConfigFactory")
 public class Main {
 
 	public static final String MOD_ID = "joindatefilter";
@@ -59,6 +59,7 @@ public class Main {
 	public void clientChat(ClientChatReceivedEvent event) throws IOException {
 
 		if (config.mod_enabled && server == 1) {
+			if (config.experimental.newFilter && playerChatFilter(event)) return; // Replace filter function
 
 			String message = event.getMessage().getUnformattedText();
 			String myName = Minecraft.getMinecraft().player.getName();
@@ -106,5 +107,65 @@ public class Main {
 				event.setMessage(null);
 			}
 		}
+	}
+
+	/**
+	 * Hides new player message from chat based on join date
+	 *
+	 * @return true by default to reduce diff size
+	 */
+	private boolean playerChatFilter(ClientChatReceivedEvent event) throws IOException {
+		String myName = Minecraft.getMinecraft().player.getName();
+		String message = event.getMessage().getUnformattedText();
+
+		if (event.getType() == ChatType.CHAT) { // Only process chat
+
+			if (message.startsWith('<' + myName + '>')) return true; // do not process own chat
+			if (!message.startsWith("<")) return true; // must start with "<"PLAYER> msg"
+
+			playercheck = 0;
+			int startIndex = message.indexOf("<");
+			int endIndex = message.indexOf(">");
+			name = message.substring(startIndex + 1, endIndex);
+
+			filter = JoinDateData.findJoinDate(name);
+
+			if (filter == 1) {
+				playercheck = 1;
+				filter = 0;
+				event.setCanceled(true); // blacklisted
+			}
+			if (filter == 2) {
+				playercheck = 1; // whitelisted
+			}
+		}
+
+		if (event.getType() == ChatType.SYSTEM) {
+
+			if (message.equals("Couldn't find " + name + ". Have they joined before?")) {
+				LocalDateTime currentDate = LocalDateTime.now();
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+				String strCurrentDate = currentDate.format(formatter);
+
+				JoinDateData.newDateAppend(name, strCurrentDate);
+				playercheck = 1;
+				event.setCanceled(true);
+			}
+
+			if (message.startsWith("Player: ") && playercheck == 0) {
+				int index = message.lastIndexOf(":");
+				name = message.substring(index + 2);
+				event.setCanceled(true);
+			} else if (message.startsWith("First Joined: ") && playercheck == 0) {
+				int index = message.indexOf(":");
+				date = message.substring(index + 2, index + 12);
+				JoinDateData.newDateAppend(name, date);
+				event.setCanceled(true);
+			} else if (message.startsWith("Last Seen: ") && playercheck == 0) {
+				playercheck = 1;
+				event.setCanceled(true);
+			}
+		}
+		return true;
 	}
 }
