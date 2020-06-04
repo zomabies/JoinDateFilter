@@ -1,5 +1,6 @@
 package Xray_Doc.JoinDateFilter;
 
+import io.netty.channel.local.LocalAddress;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -12,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -42,8 +44,12 @@ public class Main {
 	public void clientHostJoin(ClientConnectedToServerEvent event) {
 		server = 0;
 		//it works on client side although advertised as server only
-		InetSocketAddress remoteHost = (InetSocketAddress) event.getManager().getRemoteAddress();
-		String host = remoteHost.getHostString();
+		SocketAddress remoteHost = event.getManager().getRemoteAddress();
+		if (remoteHost instanceof LocalAddress) {
+			log.info("Disabling filter, you're in single player");
+			return;
+		}
+		String host = ((InetSocketAddress) remoteHost).getHostString();
 		if (host.equalsIgnoreCase("constantiam.net")) {
 			server = 1;
 		}
