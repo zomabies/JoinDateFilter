@@ -8,7 +8,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class JoinDateData {
@@ -26,13 +25,13 @@ public class JoinDateData {
 	 */
 	static void initializeFile() {
 
-		if (Files.exists(JDF_ROOT) && Files.exists(DATES_TXT) && Files.exists(WHITELIST)) {
-			return;
-		}
 		try {
-			Files.createDirectory(JDF_ROOT);
-			Files.createFile(DATES_TXT);
-			Files.createFile(WHITELIST);
+			boolean dir = JDF_ROOT.toFile().mkdir();
+			boolean df = DATES_TXT.toFile().createNewFile();
+			boolean wf = WHITELIST.toFile().createNewFile();
+			if (dir || df || wf) {
+				Main.log.info("Data File created");
+			}
 		} catch (IOException e) {
 			Main.log.error("Error creating join date filter files", e);
 		}
